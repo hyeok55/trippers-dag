@@ -8,6 +8,7 @@ from airflow.decorators import task
 from airflow.models import Variable
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.utils.dates import days_ago
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 
 default_args = {
     'owner': 'jaewoo',
@@ -52,6 +53,11 @@ with DAG(
     'exchange_rate_api_to_s3',
     default_args=default_args,
     catchup = False,
-    schedule_interval='0 * * * *'  # 매시 0분에 실행하도록 설정
+    schedule_interval='1 11 * * *'  # 매일 오전 11시 1분에 실행하도록 설정 환율 정보가 오전 11 시 갱신
 ) as dag:
     fetch_and_save_task = fetch_api_and_save_to_s3(Variable.get("exchange_rate_api_key"))
+    trigger_exchange_s3_to_red = TriggerDagRunOperator(
+        task_id='trigger_exchange_s3_to_red',
+        trigger_dag_id='exchange_s3_to_red',
+        execution_date="{{ execution_date }}"
+    )
