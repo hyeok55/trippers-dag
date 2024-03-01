@@ -7,7 +7,11 @@ from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+<<<<<<< Updated upstream
 import boto3
+=======
+
+>>>>>>> Stashed changes
 
 
 def get_Redshift_connection(autocommit=True):
