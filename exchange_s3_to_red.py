@@ -7,11 +7,7 @@ from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
-<<<<<<< Updated upstream
-import boto3
-=======
 
->>>>>>> Stashed changes
 
 
 def get_Redshift_connection(autocommit=True):
@@ -104,16 +100,16 @@ def load(**context):
 
 default_args = {
     'owner': 'jaewoo',
-    'start_date': days_ago(1),
     'provide_context': True,
     'retries': 1,
     'retry_delay': timedelta(minutes=3)
 }
 
 dag = DAG(
-    dag_id = 'exchange_s3_to_red',
+    dag_id='exchange_s3_to_red',
     default_args=default_args,
-    catchup = False
+    catchup = False,
+    start_date=datetime(2024, 1, 1)
 )
 
 extract_transform = PythonOperator(
