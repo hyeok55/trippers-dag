@@ -6,6 +6,7 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.dates import days_ago
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from datetime import datetime, timedelta
 
 
@@ -111,7 +112,11 @@ dag = DAG(
     catchup = False,
     start_date=datetime(2024, 1, 1)
 )
-
+trigger_exchange_red_to_rds = TriggerDagRunOperator(
+        task_id='trigger_exchange_red_to_rds',
+        trigger_dag_id='exchange_red_to_rds',
+        execution_date="{{ execution_date }}"
+    )
 extract_transform = PythonOperator(
     task_id = 'extract_transform',
     python_callable = extract_transform,
@@ -128,4 +133,4 @@ load = PythonOperator(
     },
     dag = dag)
 
-extract_transform >> load
+extract_transform >> load >> trigger_exchange_red_to_rds
