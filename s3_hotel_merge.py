@@ -23,7 +23,7 @@ citys = [
 ]
 @task
 def merge_hotel_lists():
-    s3_hook = S3Hook(aws_conn_id='aws_conn')
+    s3_hook = S3Hook(aws_conn_id='aws_s3')
     bucket_name = 'de-6-2-bucket'
     all_citys_hotel_data = []
     for city in citys:
@@ -61,7 +61,7 @@ def merge_hotel_lists():
     now = datetime.now().strftime("%Y%m%d%H%M")
     file_name = f'raw_data_hotel/hotel_list/hotellist_{now}.json'
     data_str = json.dumps(all_citys_hotel_data, indent=4, ensure_ascii=False)
-    s3_hook = S3Hook(aws_conn_id='aws_conn')
+    s3_hook = S3Hook(aws_conn_id='aws_s3')
     s3_hook.load_string(
         string_data=data_str,
         key=file_name,

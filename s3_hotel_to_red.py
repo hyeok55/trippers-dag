@@ -29,7 +29,7 @@ def get_Redshift_connection(autocommit=True):
 
 @task
 def extract_transform():
-    s3_hook = S3Hook(aws_conn_id='aws_conn')
+    s3_hook = S3Hook(aws_conn_id='aws_s3')
     bucket_name = 'de-6-2-bucket'
     prefix = 'raw_data_hotel/hotel_list/'
     json_files = s3_hook.list_keys(bucket_name, prefix=prefix)
