@@ -10,6 +10,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.decorators import task
 from datetime import datetime, timedelta
 import boto3
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 citys = [
     "fukuoka",
     "nagoya",
@@ -92,9 +93,16 @@ default_args = {
 with DAG(
     dag_id = 'hotellists_s3_to_red',
     default_args=default_args,
-    schedule_interval="30 15 * * *"
+    #schedule_interval="30 15 * * *"
+    schedule_interval="@once"
 ) as dag:
     data_hotel = extract_transform()
     load_to_redshift = etl_hotellists_to_red(data_hotel)
 
-    data_hotel >> load_to_redshift
+    red_to_mysql = TriggerDagRunOperator(
+        task_id='red_to_mysql',
+        trigger_dag_id="redshift_to_mysql_hotel",
+        dag=dag
+    )
+
+    data_hotel >> load_to_redshift >> red_to_mysql

@@ -8,7 +8,9 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.S3_hook import S3Hook
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.dates import days_ago
+from airflow.decorators import task
 from datetime import datetime, timedelta
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 
 citys = [
     "fukuoka",
@@ -19,7 +21,7 @@ citys = [
     "sapporo",
     "tokyo"
 ]
-
+@task
 def merge_hotel_lists():
     s3_hook = S3Hook(aws_conn_id='aws_conn')
     bucket_name = 'de-6-2-bucket'
@@ -77,8 +79,19 @@ default_args = {
 with DAG(
     dag_id='merge_hotel_list',
     default_args=default_args,
-    # Schedule to run every hour
+    # Schedule to run specific timeline
     schedule_interval="25 15 * * *"
+    #schedule_interval="@once"
 ) as dag:
     # 직접 작성
     merge_hotel_lists_of_citys = merge_hotel_lists()
+    
+    trigger_dag1 = TriggerDagRunOperator(
+        task_id='trigger_dag1',
+        trigger_dag_id="hotellists_s3_to_red",
+        dag=dag
+    )
+
+    merge_hotel_lists_of_citys >> trigger_dag1
+    
+    

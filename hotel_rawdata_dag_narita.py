@@ -53,13 +53,21 @@ def hotel_list_scraping_narita():
                 #WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR,'div.abcc616ec7.cc1b961f14.c180176d40.f11eccb5e8.ff74db973c'))).click()
         
                 for el in soup.find_all("div", {"data-testid": "property-card"}):
+                    if el.find(class_="a3b8729ab1") is not None:
+                        rating = el.find(class_="a3b8729ab1").text.strip()
+                    else:
+                        rating = 0
+                    if el.find(class_="abf093bdfe f45d8e4c32 d935416c47") is not None:
+                        review_count = el.find(class_="abf093bdfe f45d8e4c32 d935416c47").text.strip()
+                    else:
+                        review_count = "1개 이용 후기"
                     hotel_results.append({
                         "name": el.find("div", {"data-testid": "title"}).text.strip(),
                         "link": el.find("a", {"data-testid": "title-link"})["href"],
                         "location": el.find("span", {"data-testid": "address"}).text.strip(),
                         "pricing": el.find("span", {"data-testid": "price-and-discounted-price"}).text.strip(),
-                        "rating": el.find(class_="a3b8729ab1").text.strip(),
-                        "review_count": el.find(class_="abf093bdfe f45d8e4c32 d935416c47").text.strip(),
+                        "rating": rating,
+                        "review_count": review_count,
                         "thumbnail": el.find("img", {"data-testid": "image"})['src'],
                         "room_unit" : el.find("div", {"data-testid": "recommended-units"}).find("h4").text.strip(),
                         "recommended_units" : el.find("div", {"data-testid": "recommended-units"}).find("ul").text.strip(),
@@ -83,8 +91,9 @@ def hotel_list_scraping_narita():
 with DAG(
     dag_id='hotel_rawdata_dag_narita',
     default_args=default_args,
-    # Schedule to run every hour
+    # Schedule to run specific timeline
     schedule_interval="30 14 * * *"
+    #schedule_interval="@once"
 ) as dag:
     # 직접 작성
     load_raw_data_hotel_narita = hotel_list_scraping_narita()
