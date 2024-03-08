@@ -80,7 +80,7 @@ def hotel_list_scraping_nagoya():
     now = datetime.now().strftime("%Y%m%d%H%M")
     file_name = f'raw_data_hotel/nagoya/nagoya_{now}.json'
     data_str = json.dumps(hotel_results, indent=4, ensure_ascii=False)
-    s3_hook = S3Hook(aws_conn_id='aws_conn')
+    s3_hook = S3Hook(aws_conn_id='aws_s3')
     s3_hook.load_string(
         string_data=data_str,
         key=file_name,

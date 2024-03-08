@@ -35,7 +35,7 @@ def get_Redshift_connection(autocommit=True):
     return conn.cursor()
     
 def get_Mysql_connection(autocommit=True):
-    mysql_hook = MySqlHook(mysql_conn_id='aws_mysql')
+    mysql_hook = MySqlHook(mysql_conn_id='aws_rds')
     mysql_conn = mysql_hook.get_conn()
     mysql_conn.autocommit = autocommit
     return mysql_conn.cursor()
