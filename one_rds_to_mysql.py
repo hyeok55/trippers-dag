@@ -25,10 +25,10 @@ def copy_table_from_redshift_to_rds():
         redshift_cursor.execute("SELECT * FROM analytics.flight_offers")
 
         # MySQL 연결 설정
-        rds_connection = pymysql.connect(host='de-6-2-database-web-temp.ch4xfyi6stod.ap-northeast-2.rds.amazonaws.com',
-                                        user='admin',
-                                        password='trippers',
-                                        database='trippers',
+        rds_connection = pymysql.connect(host='***',
+                                        user='***',
+                                        password='***',
+                                        database='***',
                                         cursorclass=pymysql.cursors.DictCursor)
         
         # MySQL로 데이터를 복사
